@@ -1,0 +1,783 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Pixelify+Sans:wght@500;600;700&family=Press+Start+2P&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --font-pixel: 'Pixelify Sans', 'Press Start 2P', monospace, sans-serif;
+  --font-retro-label: 'Press Start 2P', monospace;
+  --font-clean: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+  /* Sky Palette: Bright Cyan Blue to Soft Pink & Amber Sunset */
+  --sky-cyan-high: #0284c7;
+  --sky-cyan-mid: #38bdf8;
+  --sky-cyan-soft: #7dd3fc;
+  --sky-pink-light: #fbcfe8;
+  --sky-pink-vibrant: #f472b6;
+  --sky-rose-deep: #fb7185;
+  --sky-sunset-amber: #fed7aa;
+  --lake-bottom: #0e122b;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Prevent image selection, dragging, and downloading */
+img {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none;
+  pointer-events: none;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--lake-bottom);
+  font-family: var(--font-clean);
+  color: #ffffff;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Main Viewport Container */
+.savepoint-viewport {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  /* Seamless sky gradient: Cyan blue zenith down into soft sunset pink and warm glow */
+  background: linear-gradient(
+    180deg,
+    #0284c7 0%,
+    #0ea5e9 12%,
+    #38bdf8 26%,
+    #7dd3fc 40%,
+    #cbd5e1 52%,
+    #fbcfe8 64%,
+    #f472b6 74%,
+    #fb7185 85%,
+    #fed7aa 94%,
+    #fca5a5 100%
+  );
+}
+
+/* Atmospheric Sun Bloom behind mountains */
+.sky-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.sun-bloom {
+  position: absolute;
+  bottom: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(800px, 90vw);
+  height: min(450px, 50vh);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(254, 240, 138, 0.45) 0%,
+    rgba(251, 146, 60, 0.3) 35%,
+    rgba(244, 114, 182, 0.2) 65%,
+    transparent 80%
+  );
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+/* Game HUD / Controls (Top bar) */
+.game-hud {
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  max-width: 1200px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hud-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 9999px;
+  font-family: var(--font-retro-label);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: #e0f2fe;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.hud-icon {
+  color: #38bdf8;
+}
+
+.spin-subtle {
+  animation: spinSlow 24s linear infinite;
+}
+
+.hud-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.9rem;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(10px);
+  border: 2px solid #38bdf8;
+  border-radius: 6px;
+  color: #f8fafc;
+  font-family: var(--font-retro-label);
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+
+.hud-btn:hover {
+  background: #0284c7;
+  border-color: #7dd3fc;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(2, 132, 199, 0.35);
+}
+
+.hud-btn:active {
+  transform: translateY(1px);
+}
+
+.hud-btn-text {
+  display: inline-block;
+}
+
+/* Floating Voxel Clouds Layer */
+.cloud-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 55%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 3;
+}
+
+.cloud-wrapper {
+  position: absolute;
+  filter: drop-shadow(0 12px 24px rgba(2, 132, 199, 0.25));
+  will-change: transform;
+}
+
+.voxel-cloud {
+  width: 100%;
+  height: auto;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Staggered Cloud Sizes and Positions */
+.cloud-anim-1 {
+  top: 6%;
+  left: -2%;
+  width: min(520px, 60vw);
+  animation: cloudFloat1 9s ease-in-out infinite alternate, cloudDrift1 45s linear infinite;
+  opacity: 0.95;
+}
+
+.cloud-anim-2 {
+  top: 18%;
+  right: -5%;
+  width: min(420px, 50vw);
+  transform: scaleX(-1);
+  animation: cloudFloat2 11s ease-in-out infinite alternate, cloudDrift2 55s linear infinite;
+  opacity: 0.88;
+}
+
+.cloud-anim-3 {
+  top: 3%;
+  right: 28%;
+  width: min(280px, 35vw);
+  animation: cloudFloat3 8s ease-in-out infinite alternate;
+  opacity: 0.75;
+}
+
+@keyframes cloudFloat1 {
+  0% { transform: translateY(0px) scale(1); }
+  100% { transform: translateY(-16px) scale(1.02); }
+}
+
+@keyframes cloudFloat2 {
+  0% { transform: scaleX(-1) translateY(0px); }
+  100% { transform: scaleX(-1) translateY(-14px); }
+}
+
+@keyframes cloudFloat3 {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-10px); }
+}
+
+@keyframes cloudDrift1 {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(30px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes cloudDrift2 {
+  0% { transform: scaleX(-1) translateX(0); }
+  50% { transform: scaleX(-1) translateX(-25px); }
+  100% { transform: scaleX(-1) translateX(0); }
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Ambient Floating Particles (Voxel fireflies / dust motes) */
+.ambient-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #fef08a;
+  border-radius: 1px;
+  box-shadow: 0 0 10px #fde047, 0 0 20px #f59e0b;
+  opacity: 0.8;
+  animation: floatParticle 8s infinite ease-in-out;
+}
+
+.p1 { bottom: 35%; left: 15%; animation-duration: 9s; animation-delay: 0s; width: 5px; height: 5px; }
+.p2 { bottom: 42%; right: 20%; animation-duration: 11s; animation-delay: 2s; width: 7px; height: 7px; background-color: #7dd3fc; box-shadow: 0 0 10px #38bdf8; }
+.p3 { bottom: 28%; left: 35%; animation-duration: 7s; animation-delay: 4s; width: 4px; height: 4px; }
+.p4 { bottom: 50%; right: 40%; animation-duration: 12s; animation-delay: 1s; width: 6px; height: 6px; background-color: #f472b6; box-shadow: 0 0 10px #f472b6; }
+.p5 { bottom: 38%; left: 70%; animation-duration: 10s; animation-delay: 3s; width: 5px; height: 5px; }
+.p6 { bottom: 22%; left: 50%; animation-duration: 8s; animation-delay: 5s; width: 4px; height: 4px; }
+
+@keyframes floatParticle {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
+  50% { transform: translateY(-40px) translateX(15px) rotate(45deg); opacity: 0.9; }
+  100% { transform: translateY(-80px) translateX(-10px) rotate(90deg); opacity: 0; }
+}
+
+/* Main Content Container (Open sky area) */
+.content-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0.5rem 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex: 1;
+}
+
+.hero-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  /* Soft glassmorphism panel backplate to guarantee pristine readability on all screens */
+  padding: 2.25rem 2rem 2.5rem;
+  border-radius: 18px;
+  background: radial-gradient(
+    100% 100% at 50% 20%,
+    rgba(15, 23, 42, 0.35) 0%,
+    rgba(15, 23, 42, 0.5) 100%
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 16px 36px rgba(15, 23, 42, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 0.3s ease;
+}
+
+/* Save Point Beacon Badge */
+.save-badge-container {
+  display: flex;
+  justify-content: center;
+}
+
+.save-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.9rem;
+  background: rgba(2, 132, 199, 0.5);
+  border: 1.5px solid #38bdf8;
+  border-radius: 4px;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.save-beacon-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #4ade80;
+  border-radius: 1px;
+  box-shadow: 0 0 8px #4ade80;
+  animation: pulseDot 1.8s ease-in-out infinite alternate;
+}
+
+.sparkle-icon {
+  color: #facc15;
+}
+
+.save-badge-text {
+  font-family: var(--font-retro-label);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: #f0fdf4;
+  text-shadow: 1px 1px 0 #0f172a;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  100% { transform: scale(1.25); opacity: 1; }
+}
+
+/* Header & Typography */
+.hero-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Bold Pixel-Style Typography for HACKFUSION 2.0 */
+.title-hackfusion {
+  font-family: var(--font-pixel);
+  font-weight: 700;
+  font-size: clamp(2.4rem, 6.5vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  /* Retro 3D pixel text shadow */
+  text-shadow: 
+    0 2px 0 #0284c7,
+    0 4px 0 #0369a1,
+    0 6px 0 #075985,
+    0 8px 1px #0c4a6e,
+    0 10px 18px rgba(0, 0, 0, 0.65);
+  transform: translateZ(0);
+}
+
+/* Subtitle: THE SAVE POINT */
+.subtitle-savepoint {
+  font-family: var(--font-retro-label);
+  font-size: clamp(0.9rem, 2.2vw, 1.45rem);
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: #fde047;
+  text-shadow: 
+    2px 2px 0px #854d0e,
+    0 0 14px rgba(253, 224, 71, 0.55);
+  margin-top: 0.25rem;
+}
+
+/* Message Block */
+.adventure-message-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.25rem;
+  max-width: 680px;
+}
+
+.adventure-headline {
+  font-family: var(--font-clean);
+  font-size: clamp(1.2rem, 2.6vw, 1.75rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(15, 23, 42, 0.7);
+}
+
+.adventure-quote {
+  font-family: var(--font-clean);
+  font-size: clamp(1.02rem, 2vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.5;
+  color: #f1f5f9;
+  font-style: italic;
+  text-shadow: 0 2px 6px rgba(15, 23, 42, 0.7);
+}
+
+/* Action & Button Section */
+.action-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+/* Minecraft / Retro Voxel Button */
+.voxel-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  padding: 1.05rem 2.2rem;
+  font-family: var(--font-retro-label);
+  font-size: clamp(0.75rem, 1.6vw, 1.02rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  /* Minecraft Emerald / Diamond inspired vibrant game button */
+  background: linear-gradient(180deg, #38bdf8 0%, #0284c7 50%, #0369a1 100%);
+  border: 4px solid #082f49;
+  border-radius: 4px;
+  box-shadow: 
+    inset 0 3px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -3px 0 rgba(12, 74, 110, 0.8),
+    0 6px 0 #082f49,
+    0 12px 24px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  user-select: none;
+  overflow: hidden;
+  transition: transform 0.12s ease, filter 0.15s ease, box-shadow 0.12s ease;
+  text-shadow: 2px 2px 0px #082f49;
+}
+
+.btn-text {
+  white-space: nowrap;
+}
+
+.voxel-btn:hover {
+  filter: brightness(1.12);
+  transform: translateY(-3px);
+  box-shadow: 
+    inset 0 3px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -3px 0 rgba(12, 74, 110, 0.8),
+    0 9px 0 #082f49,
+    0 18px 30px rgba(0, 0, 0, 0.5);
+}
+
+.voxel-btn:active {
+  transform: translateY(4px);
+  box-shadow: 
+    inset 0 3px 0 rgba(8, 47, 73, 0.8),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.2),
+    0 2px 0 #082f49,
+    0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+.voxel-btn:focus-visible {
+  outline: 4px solid #facc15;
+  outline-offset: 4px;
+}
+
+.btn-pixel-icon {
+  color: #fef08a;
+  font-size: 0.9em;
+  animation: pulseIcon 2s infinite ease-in-out;
+}
+
+@keyframes pulseIcon {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.25); color: #ffffff; }
+}
+
+.btn-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  animation: shineSweep 4.5s infinite;
+  pointer-events: none;
+}
+
+@keyframes shineSweep {
+  0% { left: -100%; }
+  25%, 100% { left: 160%; }
+}
+
+/* Authentic Minecraft Achievement / Save Point Notification Box */
+.mc-toast-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  animation: mcSlideIn 0.25s steps(4, end);
+}
+
+.mc-achievement-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.6rem 1rem 0.6rem 0.75rem;
+  background-color: #26262b;
+  /* Minecraft 3D Beveled Pixel Frame */
+  border: 3px solid #000000;
+  border-radius: 2px;
+  box-shadow: 
+    inset 3px 3px 0 #5a5a62,
+    inset -3px -3px 0 #151518,
+    0 8px 24px rgba(0, 0, 0, 0.65);
+  max-width: 95%;
+  text-align: left;
+}
+
+/* Minecraft Item Slot Frame */
+.mc-item-slot {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #151518;
+  border: 2px solid #000000;
+  box-shadow: 
+    inset 2px 2px 0 #0a0a0c,
+    inset -2px -2px 0 #3e3e46;
+}
+
+.mc-slot-icon {
+  color: #facc15;
+  font-size: 1.15rem;
+  text-shadow: 0 0 6px #f59e0b, 1px 1px 0 #000;
+  animation: pulseSlotIcon 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseSlotIcon {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.2); filter: brightness(1.3); }
+}
+
+.mc-achievement-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.mc-achievement-title {
+  font-family: var(--font-retro-label);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: #ffff55; /* Classic Minecraft Yellow */
+  text-shadow: 1px 1px 0px #3f3f00, 2px 2px 0px #000000;
+  text-transform: uppercase;
+}
+
+.mc-achievement-desc {
+  font-family: var(--font-pixel);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  text-shadow: 1px 1px 0px #000000;
+  line-height: 1.2;
+}
+
+@keyframes mcSlideIn {
+  from {
+    transform: translateY(12px) scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Below-Button Subtitle */
+.memory-subtitle {
+  font-family: var(--font-clean);
+  font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+  font-weight: 500;
+  color: #f8fafc;
+  font-style: italic;
+  text-shadow: 0 2px 6px rgba(15, 23, 42, 0.7);
+  transition: all 0.3s ease;
+}
+
+.memory-subtitle.highlight-pulse {
+  color: #fef08a;
+  text-shadow: 0 0 12px rgba(254, 240, 138, 0.8), 0 2px 6px rgba(0,0,0,0.8);
+  transform: scale(1.04);
+}
+
+/* Sunset Mountains Landscape (Bottom Section) */
+.landscape-anchor {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  pointer-events: none;
+  z-index: 5;
+  margin-top: -2rem;
+  line-height: 0;
+}
+
+.mountain-reflection-wrapper {
+  width: 100%;
+  max-width: 1600px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.sunset-mountain-img {
+  width: 100%;
+  max-height: 48vh;
+  object-fit: contain;
+  object-position: bottom center;
+  filter: drop-shadow(0 -8px 24px rgba(244, 114, 182, 0.35));
+  will-change: transform;
+}
+
+/* Site Footer */
+.site-footer {
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  padding: 0.9rem 1.5rem;
+  background: rgba(14, 18, 43, 0.85);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-text {
+  font-family: var(--font-retro-label);
+  font-size: clamp(0.58rem, 1.4vw, 0.72rem);
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.heart-icon {
+  color: #f43f5e;
+  animation: heartBeat 1.4s infinite ease-in-out;
+}
+
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.22); }
+  40% { transform: scale(1); }
+  60% { transform: scale(1.15); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .game-hud {
+    padding: 1rem 1rem 0.5rem;
+  }
+
+  .hud-badge {
+    font-size: 0.55rem;
+    padding: 0.3rem 0.65rem;
+  }
+
+  .hud-btn {
+    font-size: 0.58rem;
+    padding: 0.35rem 0.7rem;
+  }
+
+  .content-container {
+    padding: 0.5rem 1rem 1.5rem;
+  }
+
+  .hero-card {
+    padding: 1.5rem 1.25rem 1.75rem;
+    gap: 1rem;
+    border-radius: 14px;
+  }
+
+  .title-hackfusion {
+    font-size: 2.2rem;
+  }
+
+  .subtitle-savepoint {
+    font-size: 0.85rem;
+    letter-spacing: 0.16em;
+  }
+
+  .adventure-headline {
+    font-size: 1.05rem;
+    letter-spacing: 0.05em;
+  }
+
+  .adventure-quote {
+    font-size: 0.95rem;
+  }
+
+  .voxel-btn {
+    width: auto;
+    max-width: 100%;
+    padding: 0.9rem 1.25rem;
+    font-size: clamp(0.68rem, 2.8vw, 0.82rem);
+  }
+
+  .sunset-mountain-img {
+    max-height: 40vh;
+  }
+}
+
+@media (max-height: 700px) {
+  .hero-card {
+    padding: 1.25rem 1.25rem;
+    gap: 0.85rem;
+  }
+
+  .title-hackfusion {
+    font-size: 2rem;
+  }
+
+  .sunset-mountain-img {
+    max-height: 35vh;
+  }
+}
