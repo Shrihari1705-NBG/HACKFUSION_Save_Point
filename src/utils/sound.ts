@@ -3,6 +3,7 @@
 class SoundManager {
   private ctx: AudioContext | null = null;
   public enabled: boolean = true;
+  private unlocked: boolean = false;
 
   private initContext() {
     if (!this.ctx && typeof window !== 'undefined') {
@@ -13,6 +14,25 @@ class SoundManager {
     }
     if (this.ctx && this.ctx.state === 'suspended') {
       this.ctx.resume();
+    }
+  }
+
+  /**
+   * Call this on the very first user gesture (click / touch / key).
+   * Browsers require a user gesture before AudioContext can produce sound.
+   * This creates and immediately resumes the context so all subsequent
+   * sounds work even if they are triggered programmatically.
+   */
+  unlock() {
+    if (this.unlocked) return;
+    this.unlocked = true;
+    try {
+      this.initContext();
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+    } catch {
+      // ignore
     }
   }
 

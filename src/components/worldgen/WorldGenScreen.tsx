@@ -36,6 +36,28 @@ export const WorldGenScreen: React.FC<WorldGenScreenProps> = ({
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // ─── Audio unlock on first user gesture ─────────────────────────────────────
+  // Browsers block AudioContext until a real pointer/key event.
+  // We attach a one-shot listener to the whole document so that the very
+  // first tap/click/keydown from the visitor (e.g. the SKIP button or
+  // the SFX toggle) wakes the AudioContext before our scheduled ticks fire.
+  useEffect(() => {
+    const unlock = () => {
+      soundManager.unlock();
+      document.removeEventListener('click', unlock, true);
+      document.removeEventListener('touchstart', unlock, true);
+      document.removeEventListener('keydown', unlock, true);
+    };
+    document.addEventListener('click', unlock, true);
+    document.addEventListener('touchstart', unlock, true);
+    document.addEventListener('keydown', unlock, true);
+    return () => {
+      document.removeEventListener('click', unlock, true);
+      document.removeEventListener('touchstart', unlock, true);
+      document.removeEventListener('keydown', unlock, true);
+    };
+  }, []);
+
   // Function to finish generation and transition
   const handleFinish = useCallback(() => {
     if (completedRef.current) return;
@@ -59,20 +81,22 @@ export const WorldGenScreen: React.FC<WorldGenScreenProps> = ({
       return;
     }
 
-    // Sequence of realistic stepped progress checkpoints
-    // 36% is intentionally included as a key milestone matching the reference screenshot!
+    // Milestones are deliberately shifted so the first audible ticks
+    // fire AFTER the typical user-gesture unlock window (~300-600 ms
+    // after page load when the user clicks/taps for the first time).
+    // p:0 is silent; sounds start from p:7 onward.
     const milestones = [
-      { p: 0, delay: 0 },
-      { p: 7, delay: 280 },
-      { p: 18, delay: 650 },
-      { p: 29, delay: 1100 },
-      { p: 36, delay: 1450 }, // Exact reference screenshot percentage!
-      { p: 48, delay: 1950 },
-      { p: 61, delay: 2400 },
-      { p: 74, delay: 2850 },
-      { p: 87, delay: 3350 },
-      { p: 96, delay: 3800 },
-      { p: 100, delay: 4200 },
+      { p: 0,   delay: 0    },
+      { p: 7,   delay: 800  },
+      { p: 18,  delay: 1350 },
+      { p: 29,  delay: 1800 },
+      { p: 36,  delay: 2250 }, // Exact reference screenshot percentage!
+      { p: 48,  delay: 2750 },
+      { p: 61,  delay: 3200 },
+      { p: 74,  delay: 3700 },
+      { p: 87,  delay: 4200 },
+      { p: 96,  delay: 4700 },
+      { p: 100, delay: 5100 },
     ];
 
     const timeouts: ReturnType<typeof setTimeout>[] = [];
@@ -88,7 +112,7 @@ export const WorldGenScreen: React.FC<WorldGenScreenProps> = ({
           setStatusText(found.text);
         }
 
-        // Sound effect tick
+        // Sound effect tick - AudioContext should already be unlocked by now
         if (p > 0 && p < 100) {
           soundManager.playWorldGenTick();
         } else if (p === 100) {

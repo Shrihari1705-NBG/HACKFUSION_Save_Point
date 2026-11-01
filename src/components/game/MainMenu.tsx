@@ -13,7 +13,9 @@ const SPLASH_MESSAGES = [
   'Who loves that "Special Uppitt"...',
   'A little piece of HackFusion!',
   'Kash Who "Shawarma" mil jaata...',
-  'Inna 10 Boxes Bek!!!'
+  'Inna 10 Boxes Bek!!!',
+  'Food Coupan sakaata?',
+  'kya Bhaiyaaaa...'
 ];
 
 export const MainMenu: React.FC<MainMenuProps> = ({
@@ -80,7 +82,6 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         </p>
 
         <br />
-        <br />
 
         {/* Main Menu Button Options */}
         <nav className="mc-menu-options" aria-label="Main menu navigation">
@@ -89,8 +90,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             className="mc-menu-btn secondary-highlight"
             onClick={() => handleButtonClick('spawn')}
           >
-            <span>ENTER MEMORY WORLD</span>
-            <span className="mc-btn-tag">SPAWN</span>
+            ENTER MEMORY WORLD
           </button>
         </nav>
       </div>

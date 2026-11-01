@@ -371,9 +371,9 @@
 .mc-select-world-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
   width: 100%;
-  max-width: 620px;
+  max-width: 720px;
   margin: auto 0;
 }
 
@@ -381,61 +381,108 @@
 .mc-world-entry {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
-  padding: 0.55rem 0.75rem;
+  gap: 1.5rem;
+  padding: 0.85rem 1.1rem;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: all 0.1s ease;
+  transition: all 0.2s ease;
   outline: none;
 }
 
 .mc-world-entry:hover {
-  background-color: rgba(0, 0, 0, 0.35);
+  background-color: rgba(0, 0, 0, 0.4);
   border-color: rgba(255, 255, 255, 0.35);
 }
 
 .mc-world-entry.selected {
   border: 2px solid #ffffff;
-  background-color: rgba(0, 0, 0, 0.65);
+  background-color: rgba(0, 0, 0, 0.75);
 }
 
-/* Solid Blue Square Icon - Strict Match to Reference Pic */
-.mc-world-icon-blue {
-  width: 52px;
-  height: 52px;
-  min-width: 52px;
-  background-color: #3b76cf;
-  border: 2px solid #1d4ed8;
+/* Thumbnail Box - Blue frame holding image from Assets */
+.mc-world-thumbnail-container {
+  width: 88px;
+  height: 88px;
+  min-width: 88px;
+  background-color: #1e3a8a;
+  border: 3px solid #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   box-shadow: 
-    inset 1px 1px 0 #60a5fa,
-    inset -1px -1px 0 #1e3a8a;
+    inset 2px 2px 0 rgba(255, 255, 255, 0.25),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.5),
+    0 4px 10px rgba(0, 0, 0, 0.7);
+}
+
+.mc-world-thumbnail-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  transition: filter 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* Selected world is in full color */
+.mc-world-entry.selected .mc-world-thumbnail-img {
+  filter: grayscale(0%) saturate(1);
+  opacity: 1;
+  transform: scale(1.02);
+}
+
+/* Unselected worlds are gray with 0 saturation */
+.mc-world-entry:not(.selected) .mc-world-thumbnail-img {
+  filter: grayscale(100%) saturate(0);
+  opacity: 0.5;
+}
+
+.mc-world-entry:not(.selected):hover .mc-world-thumbnail-img {
+  opacity: 0.75;
 }
 
 /* World Name & Date */
 .mc-world-info {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.55rem;
 }
 
 .mc-world-name {
   font-family: var(--mc-font-pixel);
-  font-size: clamp(0.72rem, 1.8vw, 0.85rem);
+  font-size: clamp(0.85rem, 2vw, 1.05rem);
   font-weight: 700;
-  color: #ffffff;
-  text-shadow: 1px 1px 0 #000000;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  transition: color 0.2s ease;
+}
+
+.mc-world-entry.selected .mc-world-name {
+  color: #ffffff;
+  text-shadow: 2px 2px 0 #000000;
+}
+
+.mc-world-entry:not(.selected) .mc-world-name {
+  color: #9ca3af;
+  text-shadow: 1px 1px 0 #000000;
 }
 
 .mc-world-date {
   font-family: var(--mc-font-pixel);
-  font-size: clamp(0.6rem, 1.5vw, 0.7rem);
+  font-size: clamp(0.68rem, 1.6vw, 0.82rem);
+  letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+}
+
+.mc-world-entry.selected .mc-world-date {
   color: #cbd5e1;
   text-shadow: 1px 1px 0 #000000;
-  letter-spacing: 0.04em;
+}
+
+.mc-world-entry:not(.selected) .mc-world-date {
+  color: #6b7280;
+  text-shadow: 1px 1px 0 #000000;
 }
 
 /* Bottom Footer Bar */

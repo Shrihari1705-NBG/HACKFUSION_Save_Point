@@ -1,0 +1,949 @@
+/* ============================================================
+   BonusChestGame — bonusChest.css
+   Minecraft-inspired Bonus Chest mini-game styles
+   ============================================================ */
+
+/* ── Base Screens ─────────────────────────────────────────── */
+
+.bc-screen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  z-index: 200;
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+}
+
+.bc-sky {
+  background-color: #38a2e5;
+}
+
+/* ── Clouds Layer (Varying sizes, repeating, soft bottom fade) */
+
+.bc-clouds-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 290px;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+  /* Soft gradient fade so clouds melt seamlessly into sky without sharp edge */
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 100%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 100%);
+}
+
+.bc-cloud {
+  position: absolute;
+  pointer-events: none;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  user-select: none;
+  object-fit: contain;
+}
+
+/* Cloud 1: Large primary voxel cloud cluster drifting slowly from left */
+.bc-cloud-1 {
+  top: -10px;
+  left: -8%;
+  width: 68%;
+  max-width: 950px;
+  opacity: 0.95;
+  animation: cloudDriftSlow 55s linear infinite alternate;
+}
+
+/* Cloud 2: Medium voxel cloud cluster, flipped and drifting from right */
+.bc-cloud-2 {
+  top: 5px;
+  right: -8%;
+  width: 56%;
+  max-width: 780px;
+  opacity: 0.9;
+  transform: scaleX(-1);
+  animation: cloudDriftMed 44s linear infinite alternate-reverse;
+}
+
+/* Cloud 3: Smaller distant voxel cloud cluster in the center */
+.bc-cloud-3 {
+  top: 25px;
+  left: 28%;
+  width: 44%;
+  max-width: 580px;
+  opacity: 0.75;
+  animation: cloudDriftSmall 65s linear infinite alternate;
+}
+
+@keyframes cloudDriftSlow {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(45px); }
+}
+
+@keyframes cloudDriftMed {
+  0% { transform: scaleX(-1) translateX(0); }
+  100% { transform: scaleX(-1) translateX(35px); }
+}
+
+@keyframes cloudDriftSmall {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-40px); }
+}
+
+/* ── Back Button (Stone style, top-left) ──────────────────── */
+
+.bc-back-btn {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 50;
+  background: #6b7280;
+  color: #fff;
+  border: 3px solid #000;
+  box-shadow: 3px 3px 0 #000;
+  padding: 0.5rem 0.85rem;
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: 0.55rem;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: background 0.1s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.bc-back-btn:hover {
+  background: #4b5563;
+}
+
+.bc-back-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #000;
+}
+
+/* ── Chest Selection Screen Content (Picture 1 & 2 Layout) ── */
+
+.bc-chest-selection-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  width: 100%;
+  padding: 4rem 1rem 2rem;
+  text-align: center;
+}
+
+.bc-heading {
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: clamp(1.4rem, 3.8vw, 2.4rem);
+  color: #ffffff;
+  text-shadow: 0 4px 0 #000, 4px 4px 0 #000, -2px 0 0 #000, 0 -2px 0 #000;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+.bc-subheading {
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: clamp(0.72rem, 1.8vw, 1rem);
+  color: #000000;
+  letter-spacing: 0.06em;
+  text-shadow: none;
+  margin-bottom: 3.5rem;
+}
+
+/* ── Chest Row ────────────────────────────────────────────── */
+
+.bc-chest-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: clamp(2.5rem, 6vw, 5.5rem);
+  align-items: flex-end;
+  padding: 0 1.5rem;
+}
+
+/* ── Chest Wrapper / Button ───────────────────────────────── */
+
+.bc-chest-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+}
+
+.bc-chest-wrapper:focus-visible .bc-chest-img {
+  filter: drop-shadow(0 0 10px #facc15) drop-shadow(0 0 4px #facc15);
+}
+
+.bc-chest-wrapper:hover .bc-chest-img {
+  transform: translateY(-10px) scale(1.04);
+  filter: drop-shadow(0 0 8px #facc15);
+}
+
+.bc-chest-wrapper:disabled,
+.bc-chest-wrapper[disabled] {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Chest Image ──────────────────────────────────────────── */
+
+.bc-chest-img {
+  width: clamp(170px, 22vw, 240px);
+  height: auto;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  animation: chestFloat 3s ease-in-out infinite;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  display: block;
+}
+
+.bc-chest-wrapper:nth-child(2) .bc-chest-img {
+  animation-delay: -1s;
+}
+.bc-chest-wrapper:nth-child(3) .bc-chest-img {
+  animation-delay: -2s;
+}
+
+@keyframes chestFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ── Shake (wrong chest) ──────────────────────────────────── */
+
+.bc-chest-wrapper.shaking .bc-chest-img {
+  animation: chestShake 0.4s ease-in-out;
+}
+
+@keyframes chestShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
+/* ── Opening (correct chest) - Snappy celebration pulse ──── */
+
+.bc-chest-wrapper.opening .bc-chest-img {
+  animation: chestPulse 0.3s ease-in-out 2;
+  filter: drop-shadow(0 0 18px #facc15) brightness(1.35);
+}
+
+@keyframes chestPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12) translateY(-8px); }
+}
+
+/* ── Ground Shadow (Exact oval ellipse under chests) ─────── */
+
+.bc-chest-shadow {
+  border-radius: 50%;
+  background: rgba(15, 45, 65, 0.45);
+  width: 90%;
+  height: 18px;
+  margin: 6px auto 0;
+  filter: blur(2px);
+}
+
+/* ── Flash Overlay ────────────────────────────────────────── */
+
+.bc-flash-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 100, 0, 0.65);
+  pointer-events: none;
+  z-index: 500;
+  animation: flashFade 0.5s ease-out forwards;
+}
+
+@keyframes flashFade {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ── Particles ────────────────────────────────────────────── */
+
+.bc-particle {
+  position: absolute;
+  border-radius: 1px;
+  pointer-events: none;
+  animation: particleBlast 0.9s ease-out forwards;
+  z-index: 600;
+}
+
+@keyframes particleBlast {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx, 60px), var(--ty, -80px)) scale(0.3);
+    opacity: 0;
+  }
+}
+
+.bc-gold-particle {
+  position: absolute;
+  border-radius: 1px;
+  pointer-events: none;
+  animation: goldRise 0.65s ease-out forwards;
+  z-index: 600;
+}
+
+@keyframes goldRise {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx, 0px), var(--ty, -110px)) scale(0.2);
+    opacity: 0;
+  }
+}
+
+/* ── Death Screen ─────────────────────────────────────────── */
+
+.bc-death-screen {
+  background: rgba(10, 0, 0, 0.97);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.bc-death-title {
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: 1.6rem;
+  color: #ef4444;
+  text-shadow: 3px 3px 0 #000;
+  line-height: 1.4;
+  max-width: 700px;
+}
+
+.bc-death-subtitle {
+  font-family: var(--mc-font-sub, sans-serif);
+  font-size: 1rem;
+  color: #fca5a5;
+  max-width: 480px;
+}
+
+.bc-death-tip {
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: 0.58rem;
+  color: #6b7280;
+  letter-spacing: 0.05em;
+}
+
+.bc-death-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.bc-btn-respawn {
+  background: #16a34a;
+  color: #fff;
+  border: 3px solid #000;
+  box-shadow: 3px 3px 0 #000;
+  padding: 0.8rem 1.5rem;
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: 0.65rem;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: background 0.1s;
+}
+
+.bc-btn-respawn:hover {
+  background: #15803d;
+}
+
+.bc-btn-respawn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #000;
+}
+
+.bc-btn-back-chests {
+  background: #374151;
+  color: #fff;
+  border: 3px solid #000;
+  box-shadow: 3px 3px 0 #000;
+  padding: 0.8rem 1.5rem;
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: 0.65rem;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: background 0.1s;
+}
+
+.bc-btn-back-chests:hover {
+  background: #1f2937;
+}
+
+.bc-btn-back-chests:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #000;
+}
+
+/* ── Achievement Panel (Stays until user clicks) ─────────── */
+
+.bc-achievement-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 700;
+  animation: achieveFadeIn 0.35s ease-out;
+}
+
+@keyframes achieveFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.bc-achievement-panel {
+  background: #1565c0;
+  border: 3px solid #000;
+  box-shadow: 8px 8px 0 #000;
+  padding: 2.2rem 2.8rem;
+  max-width: 560px;
+  width: 90%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.bc-achievement-label {
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: 0.65rem;
+  color: #facc15;
+  letter-spacing: 0.08em;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.bc-achievement-title {
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: 1.3rem;
+  color: #fff;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.bc-achievement-quote {
+  font-family: var(--mc-font-sub, sans-serif);
+  font-size: 0.95rem;
+  color: #bfdbfe;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.bc-achievement-skip {
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: 0.52rem;
+  color: #93c5fd;
+  letter-spacing: 0.05em;
+  margin-top: 0.5rem;
+  animation: blink 1.2s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ── Memory Collection Screen (Exact Picture 5 with Village in Front) ── */
+
+.bc-phase-screen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #38a2e5;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.bc-phase-container {
+  position: relative;
+  z-index: 50; /* Cards and banner on top */
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 2.8rem 2.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2.5rem;
+  box-sizing: border-box;
+}
+
+/* Left column: Blue banner card + Back button */
+.bc-phase-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+
+.bc-phase-card {
+  background: #0070c9;
+  border: none;
+  box-shadow: 10px 10px 0 #000000;
+  padding: 1.8rem 2.2rem;
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: clamp(0.75rem, 1.35vw, 0.95rem);
+  color: #ffffff;
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+  text-align: center;
+  width: clamp(280px, 28vw, 380px);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bc-phase-back-btn {
+  background: #16a34a;
+  color: #ffffff;
+  border: 3px solid #000000;
+  box-shadow: 4px 4px 0 #000000;
+  padding: 0.85rem 1.4rem;
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: clamp(0.55rem, 1vw, 0.65rem);
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: background 0.1s, transform 0.1s, box-shadow 0.1s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.bc-phase-back-btn:hover {
+  background: #15803d;
+  color: #fef08a;
+  transform: translateY(-2px);
+  box-shadow: 4px 6px 0 #000000;
+}
+
+.bc-phase-back-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #000000;
+}
+
+/* Right column: Grid of cards for ONLY present media */
+.bc-phase-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: clamp(340px, 48vw, 560px);
+  flex-shrink: 0;
+}
+
+.bc-phase-slot {
+  background: #000000;
+  border: 2px solid #ffffff;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.4);
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bc-phase-slot:hover {
+  transform: scale(1.04);
+  border-color: #facc15;
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.7);
+}
+
+.bc-phase-slot:focus-visible {
+  outline: 2px solid #facc15;
+  outline-offset: 2px;
+}
+
+.bc-phase-slot-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.bc-video-thumb-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+}
+
+.bc-video-play-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid #ffffff;
+  color: #ffffff;
+  padding: 0.35rem 0.6rem;
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: 0.52rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  pointer-events: none;
+  letter-spacing: 0.05em;
+}
+
+.bc-play-icon {
+  color: #facc15;
+  font-size: 0.65rem;
+}
+
+.bc-phase-slot-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.75);
+  color: #ffffff;
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: 0.45rem;
+  padding: 0.3rem 0.45rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Village Landscape anchored to the bottom edge-to-edge without cutting roofs */
+.bc-phase-village {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  line-height: 0;
+  z-index: 40; /* High z-index on top, just below the cards (50) */
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.bc-phase-village-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* ── Lightbox (with Download button beside X mark) ───────── */
+
+.bc-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.94);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.bc-lightbox-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.bc-lightbox-media {
+  max-width: 88vw;
+  max-height: 76vh;
+  object-fit: contain;
+  border: 4px solid #fff;
+  box-shadow: 6px 6px 0 #000;
+  display: block;
+  background: #000;
+}
+
+.bc-lightbox-video {
+  width: auto;
+  height: auto;
+}
+
+/* Top Actions: Download button beside X mark */
+.bc-lightbox-top-actions {
+  position: absolute;
+  top: -3.5rem;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.bc-lightbox-download-btn {
+  background: #16a34a;
+  color: #fff;
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0 #000;
+  padding: 0.55rem 0.9rem;
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: 0.58rem;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: background 0.1s, transform 0.1s;
+}
+
+.bc-lightbox-download-btn:hover {
+  background: #15803d;
+  color: #facc15;
+}
+
+.bc-lightbox-download-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #000;
+}
+
+.bc-lightbox-close {
+  background: #1f2937;
+  color: #fff;
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0 #000;
+  width: 38px;
+  height: 38px;
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s, color 0.1s;
+}
+
+.bc-lightbox-close:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.bc-lightbox-prev,
+.bc-lightbox-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  border: 3px solid #fff;
+  box-shadow: 3px 3px 0 #000;
+  width: 48px;
+  height: 48px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s;
+  z-index: 50;
+}
+
+.bc-lightbox-prev {
+  left: -4rem;
+}
+
+.bc-lightbox-next {
+  right: -4rem;
+}
+
+.bc-lightbox-prev:hover,
+.bc-lightbox-next:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.bc-lightbox-prev:disabled,
+.bc-lightbox-next:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.bc-lightbox-footer {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-family: var(--mc-font-pixel, 'Press Start 2P', monospace);
+  font-size: 0.55rem;
+  color: #e2e8f0;
+  letter-spacing: 0.05em;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.bc-lightbox-filename {
+  color: #facc15;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 860px) {
+  .bc-phase-container {
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1.5rem 1rem;
+    gap: 1.5rem;
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+  }
+
+  .bc-phase-left {
+    align-items: center;
+  }
+
+  .bc-phase-card {
+    width: 100%;
+    max-width: 440px;
+    padding: 1.4rem 1.6rem;
+  }
+
+  .bc-phase-grid {
+    width: 100%;
+    max-width: 440px;
+    gap: 12px;
+  }
+
+  .bc-phase-village-img {
+    max-height: 28vh;
+  }
+}
+
+@media (max-width: 640px) {
+  .bc-chest-img {
+    width: 110px;
+  }
+
+  .bc-chest-row {
+    gap: 1.2rem;
+  }
+
+  .bc-heading {
+    font-size: 1.05rem;
+  }
+
+  .bc-subheading {
+    font-size: 0.65rem;
+    margin-bottom: 2rem;
+  }
+
+  .bc-phase-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .bc-achievement-panel {
+    padding: 1.5rem 1.2rem;
+  }
+
+  .bc-achievement-title {
+    font-size: 0.85rem;
+  }
+
+  .bc-death-title {
+    font-size: 1rem;
+  }
+
+  .bc-lightbox-top-actions {
+    top: -3rem;
+  }
+
+  .bc-lightbox-prev {
+    left: 0.2rem;
+  }
+
+  .bc-lightbox-next {
+    right: 0.2rem;
+  }
+}
+
+/* ── Reduced Motion ───────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .bc-chest-img {
+    animation: none;
+  }
+
+  .bc-chest-wrapper.shaking .bc-chest-img {
+    animation: none;
+  }
+
+  .bc-chest-wrapper.opening .bc-chest-img {
+    animation: none;
+    filter: brightness(1.3);
+  }
+
+  .bc-flash-overlay {
+    animation: none;
+    opacity: 0;
+  }
+
+  .bc-particle,
+  .bc-gold-particle {
+    animation: none;
+    display: none;
+  }
+
+  .bc-cloud {
+    animation: none;
+  }
+
+  .bc-achievement-overlay {
+    animation: none;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
