@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { soundManager } from '../../utils/sound';
+import { assetPreloader } from '../../utils/assetPreloader';
 import './bonusChest.css';
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -153,12 +154,18 @@ interface LightboxProps {
 
 const Lightbox: React.FC<LightboxProps> = ({ media, startIndex, onClose }) => {
   const [index, setIndex] = useState(startIndex);
+  const [isBuffering, setIsBuffering] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   const goNext = useCallback(() => {
+    setIsBuffering(false);
+    setHasError(false);
     setIndex((i) => Math.min(i + 1, media.length - 1));
   }, [media.length]);
 
   const goPrev = useCallback(() => {
+    setIsBuffering(false);
+    setHasError(false);
     setIndex((i) => Math.max(i - 1, 0));
   }, []);
 
@@ -201,15 +208,45 @@ const Lightbox: React.FC<LightboxProps> = ({ media, startIndex, onClose }) => {
             className="bc-lightbox-media bc-lightbox-img"
             draggable={false}
           />
+        ) : hasError ? (
+          <div className="bc-lightbox-error-fallback">
+            <div className="bc-lightbox-error-title">⚠️ VIDEO PLAYBACK NOTICE</div>
+            <div className="bc-lightbox-error-desc">
+              Browser media decoder cannot directly preview this .MOV video format inline.
+              The original full-resolution file is ready to download!
+            </div>
+            <button
+              type="button"
+              className="bc-lightbox-download-btn"
+              onClick={handleDownload}
+            >
+              ⬇ DOWNLOAD {current.filename}
+            </button>
+          </div>
         ) : (
-          <video
-            key={current.src}
-            src={current.src}
-            controls
-            autoPlay
-            playsInline
-            className="bc-lightbox-media bc-lightbox-video"
-          />
+          <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
+            <video
+              key={current.src}
+              src={current.src}
+              controls
+              autoPlay
+              playsInline
+              className="bc-lightbox-media bc-lightbox-video"
+              onWaiting={() => setIsBuffering(true)}
+              onPlaying={() => setIsBuffering(false)}
+              onCanPlay={() => setIsBuffering(false)}
+              onError={() => {
+                setIsBuffering(false);
+                setHasError(true);
+              }}
+            />
+            {isBuffering && (
+              <div className="bc-lightbox-buffering" aria-live="polite">
+                <div className="bc-buffering-spinner" aria-hidden="true" />
+                <span>BUFFERING VIDEO...</span>
+              </div>
+            )}
+          </div>
         )}
 
         {/* Top actions: Download button beside X mark */}
@@ -569,17 +606,26 @@ export const BonusChestGame: React.FC<BonusChestGameProps> = ({
                     alt={item.label}
                     className="bc-phase-slot-img"
                     draggable={false}
-                    loading="lazy"
+                    decoding="async"
                   />
                 ) : (
                   <div className="bc-video-thumb-container">
-                    <video
-                      src={item.src}
-                      className="bc-phase-slot-img"
-                      preload="metadata"
-                      muted
-                      playsInline
-                    />
+                    {assetPreloader.getVideoPoster(item.src) ? (
+                      <img
+                        src={assetPreloader.getVideoPoster(item.src)}
+                        alt={item.label}
+                        className="bc-phase-slot-img"
+                        draggable={false}
+                      />
+                    ) : (
+                      <video
+                        src={item.src}
+                        className="bc-phase-slot-img"
+                        preload="metadata"
+                        muted
+                        playsInline
+                      />
+                    )}
                     <div className="bc-video-play-badge">
                       <span className="bc-play-icon">▶</span>
                       <span>VIDEO</span>
