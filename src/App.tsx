@@ -21,20 +21,6 @@ export default function App() {
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [activeWorldId, setActiveWorldId] = useState<string | null>(null);
 
-  // Dynamic unlocked worlds, persisted across sessions
-  const [unlockedWorlds, setUnlockedWorlds] = useState<string[]>(() => {
-    try {
-      const saved = localStorage.getItem('hackfusion_unlocked_worlds');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch {
-      // fallback
-    }
-    return ['w1'];
-  });
-
   // Prevent drag on images globally
   useEffect(() => {
     const handleDragStart = (e: DragEvent) => {
