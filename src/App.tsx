@@ -149,15 +149,6 @@ export default function App() {
       {/* Main Content Area (Open Sky Section) */}
       <div className="content-container">
         <div className="hero-card">
-          {/* Beacon / Save Point Top Tag */}
-          <div className="save-badge-container">
-            <div className="save-badge">
-              <span className="save-beacon-dot" />
-              <Sparkles size={13} className="sparkle-icon" aria-hidden="true" />
-              <span className="save-badge-text">CHECKPOINT UNLOCKED</span>
-            </div>
-          </div>
-
           {/* Primary Titles */}
           <header className="hero-header">
             <h1 className="title-hackfusion">
@@ -168,55 +159,14 @@ export default function App() {
             </p>
           </header>
 
-          {/* Inspiring Message */}
-          <section className="adventure-message-block" aria-label="Event Status">
-            <h2 className="adventure-headline">
-              YOUR ADVENTURE IS WAITING...
-            </h2>
-            <blockquote className="adventure-quote">
-              “The world is ready. The memories are yet to be made.”
-            </blockquote>
-          </section>
-
-          {/* Interactive Game-style Button */}
-          <div className="action-section">
-            <button
-              type="button"
-              className="game-btn voxel-btn"
-              onClick={handleButtonClick}
-              id="memories-btn"
-              aria-describedby="saved-message"
-            >
-              <span className="btn-shine" aria-hidden="true" />
-              <span className="btn-pixel-icon" aria-hidden="true">★</span>
-              <span className="btn-text">MEMORIES COMING SOON</span>
-              <span className="btn-pixel-icon" aria-hidden="true">★</span>
-            </button>
-
-            {/* Authentic Minecraft-style Checkpoint / Achievement Notification */}
-            {isSaved && (
-              <div className="mc-toast-wrapper" role="status" aria-live="polite">
-                <div className="mc-achievement-box">
-                  <div className="mc-item-slot">
-                    <span className="mc-slot-icon" aria-hidden="true">★</span>
-                  </div>
-                  <div className="mc-achievement-text">
-                    <span className="mc-achievement-title">CHECKPOINT SAVED!</span>
-                    <span className="mc-achievement-desc">Memories will unlock right here.</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Below-button subtitle */}
-            <p
-              id="saved-message"
-              ref={messageRef}
-              className={`memory-subtitle ${isSaved ? 'highlight-pulse' : ''}`}
-            >
-              “A little piece of HackFusion, saved for you.”
-            </p>
-          </div>
+          {/* Below-button subtitle */}
+          <p
+            id="saved-message"
+            ref={messageRef}
+            className={`memory-subtitle ${isSaved ? 'highlight-pulse' : ''}`}
+          >
+            “A little piece of HackFusion, saved for US.”
+          </p>
         </div>
       </div>
 
