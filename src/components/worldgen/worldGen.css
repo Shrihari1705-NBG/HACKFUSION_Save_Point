@@ -1,0 +1,283 @@
+
+.worldgen-screen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-repeat: repeat;
+  background-size: 64px 64px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+  font-family: 'Press Start 2P', 'Pixelify Sans', monospace;
+  color: #ffffff;
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s ease;
+}
+
+/* Dissolve / Zoom transition into game world */
+.worldgen-screen.worldgen-dissolve {
+  opacity: 0;
+  transform: scale(1.04);
+  pointer-events: none;
+}
+
+/* Header bar */
+.worldgen-header {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 1200px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.worldgen-brand .brand-badge {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: #fde047;
+  text-shadow: 2px 2px 0 #000000;
+}
+
+/* Authentic Minecraft HUD button */
+.mc-hud-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.8rem;
+  background-color: #484848;
+  color: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: 
+    inset 2px 2px 0 #7b7b7b,
+    inset -2px -2px 0 #282828;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  text-shadow: 1px 1px 0 #000000;
+  transition: background-color 0.1s;
+}
+
+.mc-hud-btn:hover {
+  background-color: #5a5a5a;
+  color: #ffffa0;
+}
+
+.mc-hud-btn:active {
+  box-shadow: 
+    inset -2px -2px 0 #7b7b7b,
+    inset 2px 2px 0 #282828;
+}
+
+/* Centered World Gen Focus Area */
+.worldgen-center {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto 0;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+/* Percentage Label - Directly matching reference screenshot */
+.worldgen-percentage {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(1.4rem, 4vw, 2.1rem);
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 2px 2px 0 #000000;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+/* Status message */
+.worldgen-status-text {
+  font-family: 'Pixelify Sans', 'Press Start 2P', monospace;
+  font-size: clamp(0.78rem, 2vw, 0.95rem);
+  color: #e2e8f0;
+  text-shadow: 1px 1px 0 #000000;
+  letter-spacing: 0.05em;
+  text-align: center;
+  min-height: 1.4rem;
+  animation: pulseStatus 2s infinite ease-in-out;
+}
+
+@keyframes pulseStatus {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 1; color: #ffffa0; }
+}
+
+/* =========================================================
+   The Generation Square 
+   ========================================================= */
+
+.worldgen-frame-outer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #000000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65);
+}
+
+.worldgen-frame-grey {
+  background-color: #8e8e8e;
+  padding: 34px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.worldgen-frame-indigo {
+  background-color: #222944;
+  padding: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.worldgen-frame-green {
+  background-color: #13d313;
+  padding: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 8px rgba(19, 211, 19, 0.4);
+}
+
+.worldgen-viewport {
+  position: relative;
+  width: min(210px, 52vw);
+  height: min(210px, 52vw);
+  background-color: #c0c0c0;
+  overflow: hidden;
+}
+
+.worldgen-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.worldgen-canvas-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    rgba(255, 255, 255, 0.04) 50%,
+    rgba(0, 0, 0, 0.04) 50%
+  );
+  background-size: 100% 4px;
+}
+
+/* Action button bar */
+.worldgen-action-bar {
+  margin-top: 0.85rem;
+}
+
+/* Authentic Minecraft Stone Game Button */
+.mc-game-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1.75rem;
+  background-color: #4b4b4b;
+  border: 2px solid #000000;
+  box-shadow: 
+    inset 2px 2px 0 #7b7b7b,
+    inset -2px -4px 0 #242424,
+    0 4px 10px rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.62rem, 1.6vw, 0.78rem);
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  text-shadow: 2px 2px 0 #000000;
+  transition: all 0.12s ease;
+}
+
+.mc-game-btn:hover {
+  background-color: #5c5c5c;
+  color: #ffffa0;
+  border-color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.mc-game-btn:active {
+  transform: translateY(2px);
+  box-shadow: 
+    inset -2px -2px 0 #7b7b7b,
+    inset 2px 2px 0 #242424;
+}
+
+.mc-game-btn:focus-visible {
+  outline: 2px solid #ffff55;
+  outline-offset: 2px;
+}
+
+.worldgen-skip-btn {
+  min-width: 220px;
+}
+
+/* Footer system text */
+.worldgen-footer {
+  width: 100%;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.worldgen-info {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.48rem, 1.2vw, 0.58rem);
+  color: #8c8c8c;
+  text-shadow: 1px 1px 0 #000000;
+  letter-spacing: 0.05em;
+}
+
+/* Responsive Scaling */
+@media (max-width: 640px) {
+  .worldgen-frame-grey {
+    padding: 22px;
+  }
+  .worldgen-frame-indigo {
+    padding: 5px;
+  }
+  .worldgen-frame-green {
+    padding: 3px;
+  }
+  .worldgen-viewport {
+    width: min(180px, 60vw);
+    height: min(180px, 60vw);
+  }
+  .worldgen-percentage {
+    font-size: 1.4rem;
+  }
+  .worldgen-skip-btn {
+    min-width: 180px;
+    padding: 0.75rem 1.25rem;
+  }
+}
+
+/* Support Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .worldgen-status-text {
+    animation: none;
+  }
+  .worldgen-screen {
+    transition: none;
+  }
+}

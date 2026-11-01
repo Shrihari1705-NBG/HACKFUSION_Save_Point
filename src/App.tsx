@@ -1,29 +1,23 @@
-import React, { useState, useRef, useEffect } from 'react';
-import confetti from 'canvas-confetti';
-import { Volume2, VolumeX, Sparkles, Compass, Heart } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { WorldGenScreen } from './components/worldgen/WorldGenScreen';
+import { MainMenu } from './components/game/MainMenu';
+import { SpawnPointSection } from './components/game/SpawnPointSection';
 import { soundManager } from './utils/sound';
+import { DIRT_TEXTURE_URI } from './utils/textures';
+import './components/game/game.css';
 
 export default function App() {
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [isSaved, setIsSaved] = useState(false);
-  const messageRef = useRef<HTMLParagraphElement>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [activeSection, setActiveSection] = useState<string>('menu');
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
 
-  // Prevent right-click / context menu and dragging globally
+  // Prevent drag on images globally
   useEffect(() => {
-    const handleContextMenu = (e: MouseEvent) => {
-      // Prevent context menu (Save image as...)
-      e.preventDefault();
-    };
-
     const handleDragStart = (e: DragEvent) => {
       e.preventDefault();
     };
-
-    window.addEventListener('contextmenu', handleContextMenu);
     window.addEventListener('dragstart', handleDragStart);
-
     return () => {
-      window.removeEventListener('contextmenu', handleContextMenu);
       window.removeEventListener('dragstart', handleDragStart);
     };
   }, []);
@@ -33,162 +27,59 @@ export default function App() {
     setSoundEnabled(nextState);
     soundManager.enabled = nextState;
     if (nextState) {
-      soundManager.playBlipSound();
+      soundManager.playButtonClick();
     }
   };
 
-  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    // Play retro savepoint chime
-    soundManager.playSavePointSound();
+  const handleWorldGenComplete = () => {
+    setIsLoading(false);
+  };
 
-    // Trigger Minecraft/voxel themed confetti
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = (rect.left + rect.width / 2) / window.innerWidth;
-    const y = (rect.top + rect.height / 2) / window.innerHeight;
-
-    confetti({
-      particleCount: 45,
-      spread: 70,
-      origin: { x, y },
-      colors: ['#38bdf8', '#fb7185', '#facc15', '#4ade80', '#c084fc', '#ffffff'],
-      shapes: ['square'], // Voxel/pixel block confetti!
-      scalar: 1.2,
-      ticks: 200,
-    });
-
-    setIsSaved(true);
-
-    // Scroll gently to the message area if needed
-    if (messageRef.current) {
-      messageRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
+  const handleNavigate = (section: string) => {
+    soundManager.playButtonClick();
+    setActiveSection(section);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <main className="savepoint-viewport" role="main">
-      {/* Dynamic Voxel Sky Background */}
-      <div className="sky-canvas" aria-hidden="true">
-        {/* Subtle atmospheric ambient glow */}
-        <div className="sun-bloom" />
-        <div className="sky-gradient-overlay" />
-      </div>
+    <div
+      className="mc-game-viewport mc-dirt-bg"
+      style={{
+        backgroundImage: `url("${DIRT_TEXTURE_URI}")`,
+      }}
+    >
+      {/* Dark Ambient Vignette Layer */}
+      <div className="mc-vignette-overlay" aria-hidden="true" />
 
-      {/* Sound Toggle (Top-Right HUD element) */}
-      <nav className="game-hud" aria-label="Game settings">
-        <div className="hud-badge">
-          <Compass className="hud-icon spin-subtle" size={14} aria-hidden="true" />
-          <span>HACKATHON CHECKPOINT</span>
-        </div>
-        <button
-          type="button"
-          onClick={toggleSound}
-          className="hud-btn"
-          aria-label={soundEnabled ? "Mute 8-bit sound effects" : "Enable 8-bit sound effects"}
-          title={soundEnabled ? "Mute 8-bit sound effects" : "Enable 8-bit sound effects"}
-        >
-          {soundEnabled ? (
-            <>
-              <Volume2 size={16} aria-hidden="true" />
-              <span className="hud-btn-text">SFX: ON</span>
-            </>
-          ) : (
-            <>
-              <VolumeX size={16} aria-hidden="true" />
-              <span className="hud-btn-text">SFX: OFF</span>
-            </>
+      {/* World Generation Screen (The Minecraft Java 1.16 loader) */}
+      {isLoading && (
+        <WorldGenScreen
+          onComplete={handleWorldGenComplete}
+          soundEnabled={soundEnabled}
+          onToggleSound={toggleSound}
+        />
+      )}
+
+      {/* Main Experience Render Area */}
+      {!isLoading && (
+        <main style={{ position: 'relative', zIndex: 10, flex: 1, display: 'flex', flexDirection: 'column' }}>
+          {activeSection === 'menu' && (
+            <MainMenu
+              onNavigate={handleNavigate}
+              soundEnabled={soundEnabled}
+              onToggleSound={toggleSound}
+            />
           )}
-        </button>
-      </nav>
 
-      {/* Floating Voxel Clouds (Upper Section) */}
-      <div className="cloud-layer" aria-hidden="true">
-        {/* Cloud 1: Main High Floating Voxel Cloud */}
-        <div className="cloud-wrapper cloud-anim-1">
-          <img
-            src="/assets/voxel-clouds.png"
-            alt=""
-            className="voxel-cloud cloud-size-lg"
-            loading="eager"
-            draggable={false}
-          />
-        </div>
-
-        {/* Cloud 2: Drifting Mid-Altitude Cloud */}
-        <div className="cloud-wrapper cloud-anim-2">
-          <img
-            src="/assets/voxel-clouds.png"
-            alt=""
-            className="voxel-cloud cloud-size-md"
-            loading="eager"
-            draggable={false}
-          />
-        </div>
-
-        {/* Cloud 3: Distant Soft Cloud */}
-        <div className="cloud-wrapper cloud-anim-3">
-          <img
-            src="/assets/voxel-clouds.png"
-            alt=""
-            className="voxel-cloud cloud-size-sm"
-            loading="lazy"
-            draggable={false}
-          />
-        </div>
-      </div>
-
-      {/* Floating Retro Motes / Fireflies in the sunset air */}
-      <div className="ambient-particles" aria-hidden="true">
-        <span className="particle p1" />
-        <span className="particle p2" />
-        <span className="particle p3" />
-        <span className="particle p4" />
-        <span className="particle p5" />
-        <span className="particle p6" />
-      </div>
-
-      {/* Main Content Area (Open Sky Section) */}
-      <div className="content-container">
-        <div className="hero-card">
-          {/* Primary Titles */}
-          <header className="hero-header">
-            <h1 className="title-hackfusion">
-              HACKFUSION 2.0
-            </h1>
-            <p className="subtitle-savepoint">
-              THE SAVE POINT
-            </p>
-          </header>
-
-          {/* Below-button subtitle */}
-          <p
-            id="saved-message"
-            ref={messageRef}
-            className={`memory-subtitle ${isSaved ? 'highlight-pulse' : ''}`}
-          >
-            “A little piece of HackFusion, saved for US.”
-          </p>
-        </div>
-      </div>
-
-      {/* Sunset Mountains Landscape (Bottom Section) */}
-      <footer className="landscape-anchor" aria-hidden="true">
-        <div className="mountain-reflection-wrapper">
-          <img
-            src="/assets/sunset-landscape.png"
-            alt="Voxel Sunset Mountains with water reflection and grass blocks"
-            className="sunset-mountain-img"
-            loading="eager"
-            draggable={false}
-          />
-        </div>
-      </footer>
-
-      {/* Clean Footer Bar */}
-      <div className="site-footer">
-        <p className="footer-text">
-          MADE WITH <Heart size={14} className="heart-icon" fill="currentColor" aria-hidden="true" /> BY THE SOFTWARE SOCIETY
-        </p>
-      </div>
-    </main>
+          {activeSection === 'spawn' && (
+            <SpawnPointSection
+              onBack={() => handleNavigate('menu')}
+              soundEnabled={soundEnabled}
+              onToggleSound={toggleSound}
+            />
+          )}
+        </main>
+      )}
+    </div>
   );
 }
