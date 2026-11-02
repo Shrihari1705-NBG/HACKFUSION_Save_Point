@@ -255,7 +255,7 @@
   width: clamp(54px, 7vw, 92px);
   height: auto;
   z-index: 30;
-  transition: left 0.1s linear;
+  will-change: left;
 }
 
 .fm-player-sprite {
@@ -876,4 +876,3 @@
     width: 65vw;
   }
 }
-

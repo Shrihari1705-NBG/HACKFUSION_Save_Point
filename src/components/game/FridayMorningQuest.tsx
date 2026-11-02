@@ -217,6 +217,7 @@ export const FridayMorningQuest: React.FC<FridayMorningQuestProps> = ({
     const duration = 3200;
     const startTime = performance.now();
 
+    let animationFrameId: number;
     const walkStep = (now: number) => {
       const elapsed = now - startTime;
       const progress = Math.min(1, elapsed / duration);
@@ -225,15 +226,15 @@ export const FridayMorningQuest: React.FC<FridayMorningQuestProps> = ({
       setPlayerX(currentX);
 
       if (progress < 1) {
-        requestAnimationFrame(walkStep);
+        animationFrameId = requestAnimationFrame(walkStep);
       } else {
         setIsWalking(false);
         setStage('castle_admiration');
       }
     };
 
-    const anim = requestAnimationFrame(walkStep);
-    return () => cancelAnimationFrame(anim);
+    animationFrameId = requestAnimationFrame(walkStep);
+    return () => cancelAnimationFrame(animationFrameId);
   }, [stage]);
 
   // Scene 3: Transition to Mob Ambush (darkening sky, screen rumble, mob spawn sound)
@@ -262,6 +263,7 @@ export const FridayMorningQuest: React.FC<FridayMorningQuestProps> = ({
     const duration = 3400;
     const startTime = performance.now();
 
+    let animationFrameId: number;
     const walkStep = (now: number) => {
       const elapsed = now - startTime;
       const progress = Math.min(1, elapsed / duration);
@@ -269,7 +271,7 @@ export const FridayMorningQuest: React.FC<FridayMorningQuestProps> = ({
       setPlayerX(currentX);
 
       if (progress < 1) {
-        requestAnimationFrame(walkStep);
+        animationFrameId = requestAnimationFrame(walkStep);
       } else {
         setIsWalking(false);
         // Reached castle door! Show achievement
@@ -288,8 +290,8 @@ export const FridayMorningQuest: React.FC<FridayMorningQuestProps> = ({
       }
     };
 
-    const anim = requestAnimationFrame(walkStep);
-    return () => cancelAnimationFrame(anim);
+    animationFrameId = requestAnimationFrame(walkStep);
+    return () => cancelAnimationFrame(animationFrameId);
   }, [stage]);
 
   // Handle Defeat trigger
