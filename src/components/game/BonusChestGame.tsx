@@ -20,6 +20,10 @@ export interface BonusChestGameProps {
   onUnlockNext?: () => void;
   soundEnabled?: boolean;
   onToggleSound?: () => void;
+  playerProfile?: {
+    name: string;
+    gender: string;
+  };
 }
 
 export interface MediaItem {
@@ -316,6 +320,7 @@ const Lightbox: React.FC<LightboxProps> = ({ media, startIndex, onClose }) => {
 export const BonusChestGame: React.FC<BonusChestGameProps> = ({
   onBack,
   onUnlockNext,
+  playerProfile,
 }) => {
   const [phase, setPhase] = useState<GamePhase>({ kind: 'chest_selection' });
   const [animating, setAnimating] = useState(false);
@@ -490,6 +495,20 @@ export const BonusChestGame: React.FC<BonusChestGameProps> = ({
           <div className="bc-subheading">
             CHOOSE BONUS CHEST
           </div>
+          {playerProfile?.name && (
+            <div
+              style={{
+                fontFamily: "var(--mc-font-pixel, 'Press Start 2P', monospace)",
+                fontSize: '0.62rem',
+                color: '#facc15',
+                marginTop: '0.2rem',
+                textShadow: '1px 1px 0 #000',
+                letterSpacing: '0.05em',
+              }}
+            >
+              ADVENTURER: {playerProfile.name.toUpperCase()} ({playerProfile.gender || 'PLAYER'})
+            </div>
+          )}
 
           {renderChestRow()}
         </div>

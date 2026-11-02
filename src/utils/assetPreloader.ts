@@ -146,6 +146,92 @@ export const WORLD_1_MANIFEST: AssetDefinition[] = [
   },
 ];
 
+// Manifest of assets for Stage 2 (World 2: Friday Morning)
+export const WORLD_2_MANIFEST: AssetDefinition[] = [
+  {
+    id: 'w2-castle',
+    url: '/assets/player/Castle.png',
+    type: 'image',
+    priority: 'critical',
+    label: 'TSS Castle Headquarters',
+    taskLabel: 'Generating TSS Castle...',
+  },
+  {
+    id: 'w2-mobs',
+    url: '/assets/player/Mobs.png',
+    type: 'image',
+    priority: 'critical',
+    label: 'Hostile Mob Outpost',
+    taskLabel: 'Summoning castle sentries...',
+  },
+  // Character walk cycles (Frames 1-8 for male & female)
+  ...[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ({
+    id: `w2-male-${i}`,
+    url: `/assets/player/Male/M${i}.png`,
+    type: 'image' as const,
+    priority: 'critical' as const,
+    label: `Male Frame ${i}`,
+    taskLabel: 'Preparing character sprites...',
+  })),
+  ...[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ({
+    id: `w2-female-${i}`,
+    url: `/assets/player/Female/F${i}.png`,
+    type: 'image' as const,
+    priority: 'critical' as const,
+    label: `Female Frame ${i}`,
+    taskLabel: 'Preparing character sprites...',
+  })),
+  // Friday Morning Memory Photos
+  {
+    id: 'w2-photo-1',
+    url: '/assets/memories/friday_morning/IMG_6234.JPG',
+    type: 'image',
+    priority: 'critical',
+    label: 'Friday Morning Photo #1',
+    taskLabel: 'Loading Friday Morning memories...',
+  },
+  {
+    id: 'w2-photo-2',
+    url: '/assets/memories/friday_morning/IMG_6238.JPG',
+    type: 'image',
+    priority: 'critical',
+    label: 'Friday Morning Photo #2',
+    taskLabel: 'Loading Friday Morning memories...',
+  },
+  {
+    id: 'w2-photo-3',
+    url: '/assets/memories/friday_morning/IMG_6245.JPG',
+    type: 'image',
+    priority: 'critical',
+    label: 'Friday Morning Photo #3',
+    taskLabel: 'Loading Friday Morning memories...',
+  },
+  {
+    id: 'w2-photo-4',
+    url: '/assets/memories/friday_morning/IMG_6253.JPG',
+    type: 'image',
+    priority: 'critical',
+    label: 'Friday Morning Photo #4',
+    taskLabel: 'Loading Friday Morning memories...',
+  },
+  {
+    id: 'w2-photo-5',
+    url: '/assets/memories/friday_morning/IMG_6277.JPG',
+    type: 'image',
+    priority: 'critical',
+    label: 'Friday Morning Photo #5',
+    taskLabel: 'Loading Friday Morning memories...',
+  },
+  {
+    id: 'w2-photo-6',
+    url: '/assets/memories/friday_morning/IMG_6283.JPG',
+    type: 'image',
+    priority: 'critical',
+    label: 'Friday Morning Photo #6',
+    taskLabel: 'Loading Friday Morning memories...',
+  },
+];
+
 type ProgressListener = (progress: PreloadProgress) => void;
 
 class AssetPreloader {
@@ -210,6 +296,17 @@ class AssetPreloader {
 
     this.preloadPromise = this.executePreload();
     return this.preloadPromise;
+  }
+
+  /**
+   * Preload a specific manifest of assets (e.g. World 2)
+   */
+  public async preloadManifest(manifest: AssetDefinition[]): Promise<void> {
+    for (const asset of manifest) {
+      if (asset.type === 'image') {
+        await this.loadImageWithRetry(asset.url, 1).catch(() => {});
+      }
+    }
   }
 
   private async executePreload(): Promise<PreloadProgress> {
