@@ -19,13 +19,21 @@ export interface FridayMorningQuestProps {
 
 interface PhotoItem {
   id: string;
+  type?: 'image' | 'video';
   src: string;
   label: string;
   filename: string;
 }
 
-// All confirmed Friday Morning photographs
+// All confirmed Friday Morning photographs and videos
 const FRIDAY_MORNING_PHOTOS: PhotoItem[] = [
+  {
+    id: 'fm-video-devotional',
+    type: 'video',
+    src: '/assets/memories/friday_morning/WhatsApp Video 2026-11-01 at 8.47.28 PM.mp4',
+    label: 'Devotional Test',
+    filename: 'Devotional_Test.mp4',
+  },
   { id: 'fm1',  src: '/assets/memories/friday_morning/IMG_6234.JPG', label: 'Morning Arrival',       filename: 'IMG_6234.JPG' },
   { id: 'fm2',  src: '/assets/memories/friday_morning/IMG_6246.JPG', label: 'Early Setup',           filename: 'IMG_6246.JPG' },
   { id: 'fm3',  src: '/assets/memories/friday_morning/IMG_6254.JPG', label: 'Team Gathering',        filename: 'IMG_6254.JPG' },
@@ -361,73 +369,102 @@ export const FridayMorningQuest: React.FC<FridayMorningQuestProps> = ({
           <div className="fm-hud-badge">WORLD 2 • FRIDAY MORNING</div>
         </header>
 
-        <div className="fm-gallery-container">
-          <div className="fm-gallery-left">
-            <div className="fm-gallery-card">
-              <span>PHASE 2 MEMORIES</span>
-              <span style={{ fontSize: '0.62rem', color: '#facc15', marginTop: '0.5rem' }}>
-                ARE COLLECTED!
-              </span>
-            </div>
-            <button
-              type="button"
-              className="fm-gallery-unlock-btn"
-              onClick={() => {
-                soundManager.playSavePointSound();
-                try {
-                  confetti({
-                    particleCount: 50,
-                    spread: 80,
-                    colors: ['#38bdf8', '#fb7185', '#facc15', '#4ade80', '#ffffff'],
-                    shapes: ['square'],
-                  });
-                } catch {
-                  // ignore
-                }
-                onUnlockNext();
-              }}
-              title="Unlock World 3 (Jamming Night) and return to Select World"
-            >
-              CONTINUE UNLOCKING MEMORIES ➔
-            </button>
-          </div>
+        {/* Flipped Castle sticking to the ground on the left side (hidden on mobile) */}
+        <div className="fm-gallery-castle" aria-hidden="true">
+          <img
+            src="/assets/player/Castle.png"
+            alt=""
+            className="fm-gallery-castle-img"
+            draggable={false}
+          />
+        </div>
 
-          <div className="fm-gallery-grid" role="list" aria-label="Friday Morning Photos">
-            {FRIDAY_MORNING_PHOTOS.map((item, idx) => (
-              <div
-                key={item.id}
-                className="fm-photo-slot"
-                role="listitem"
-                tabIndex={0}
+        {/* Scrollable content area */}
+        <div className="fm-gallery-scroll">
+          <div className="fm-gallery-container">
+            <div className="fm-gallery-left">
+              <div className="fm-gallery-card">
+                <span>PHASE 2 MEMORIES</span>
+                <span style={{ fontSize: '0.62rem', color: '#facc15', marginTop: '0.5rem' }}>
+                  ARE COLLECTED!
+                </span>
+              </div>
+              <button
+                type="button"
+                className="fm-gallery-unlock-btn"
                 onClick={() => {
-                  soundManager.playButtonClick();
-                  setLightboxIndex(idx);
+                  soundManager.playSavePointSound();
+                  try {
+                    confetti({
+                      particleCount: 50,
+                      spread: 80,
+                      colors: ['#38bdf8', '#fb7185', '#facc15', '#4ade80', '#ffffff'],
+                      shapes: ['square'],
+                    });
+                  } catch {
+                    // ignore
+                  }
+                  onUnlockNext();
                 }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
+                title="Return to Select World"
+              >
+                CONTINUE UNLOCKING MEMORIES ➔
+              </button>
+            </div>
+
+            <div className="fm-gallery-grid" role="list" aria-label="Friday Morning Photos">
+              {FRIDAY_MORNING_PHOTOS.map((item, idx) => (
+                <div
+                  key={item.id}
+                  className="fm-photo-slot"
+                  role="listitem"
+                  tabIndex={0}
+                  onClick={() => {
                     soundManager.playButtonClick();
                     setLightboxIndex(idx);
-                  }
-                }}
-                aria-label={`View ${item.label}`}
-              >
-                <img
-                  src={item.src}
-                  alt={item.label}
-                  className="fm-photo-img"
-                  draggable={false}
-                  loading="lazy"
-                />
-                <div className="fm-photo-label">{item.label}</div>
-              </div>
-            ))}
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      soundManager.playButtonClick();
+                      setLightboxIndex(idx);
+                    }
+                  }}
+                  aria-label={`View ${item.label}`}
+                >
+                  {item.type === 'video' ? (
+                    <div className="fm-video-thumb-container">
+                      <video
+                        src={item.src}
+                        className="fm-photo-img"
+                        preload="metadata"
+                        muted
+                        playsInline
+                      />
+                      <div className="bc-video-play-badge">
+                        <span className="bc-play-icon">▶</span>
+                        <span>VIDEO</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={item.src}
+                      alt={item.label}
+                      className="fm-photo-img"
+                      draggable={false}
+                      loading="lazy"
+                    />
+                  )}
+                  <div className="fm-photo-label">{item.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Dirt Platform on Bottom */}
+        {/* Dirt Platform — always fixed at the bottom of the screen */}
         <div
-          className="fm-dirt-platform"
+          className="fm-dirt-platform fm-dirt-platform--gallery"
           style={{ backgroundImage: `url("${DIRT_TEXTURE_URI}")` }}
           aria-hidden="true"
         />
@@ -442,12 +479,22 @@ export const FridayMorningQuest: React.FC<FridayMorningQuestProps> = ({
             onClick={() => setLightboxIndex(null)}
           >
             <div className="bc-lightbox-content" onClick={(e) => e.stopPropagation()}>
-              <img
-                src={FRIDAY_MORNING_PHOTOS[lightboxIndex].src}
-                alt={FRIDAY_MORNING_PHOTOS[lightboxIndex].label}
-                className="bc-lightbox-media bc-lightbox-img"
-                draggable={false}
-              />
+              {FRIDAY_MORNING_PHOTOS[lightboxIndex].type === 'video' ? (
+                <video
+                  src={FRIDAY_MORNING_PHOTOS[lightboxIndex].src}
+                  controls
+                  autoPlay
+                  playsInline
+                  className="bc-lightbox-media bc-lightbox-video"
+                />
+              ) : (
+                <img
+                  src={FRIDAY_MORNING_PHOTOS[lightboxIndex].src}
+                  alt={FRIDAY_MORNING_PHOTOS[lightboxIndex].label}
+                  className="bc-lightbox-media bc-lightbox-img"
+                  draggable={false}
+                />
+              )}
               <div className="bc-lightbox-top-actions">
                 <button
                   type="button"
@@ -648,8 +695,10 @@ export const FridayMorningQuest: React.FC<FridayMorningQuestProps> = ({
             className={`fm-mobs-wrapper ${
               stage === 'mob_spawn' ? 'fm-mobs-spawn-anim' : ''
             } ${
-              stage === 'checkpoint_passed' || stage === 'walking_into_castle'
-                ? 'fm-mobs-step-aside'
+              stage === 'checkpoint_passed'
+                ? 'fm-mobs-step-left'
+                : stage === 'walking_into_castle'
+                ? 'fm-mobs-fade-out'
                 : ''
             }`}
             aria-hidden="true"

@@ -42,7 +42,7 @@ const WORLDS: WorldItem[] = [
       'First Git Commits',
       'Mentors Initial Walkthrough',
     ],
-    locked: true,
+    locked: false,
   },
   {
     id: 'w3',
@@ -95,10 +95,14 @@ export const SpawnPointSection: React.FC<SpawnPointSectionProps> = ({
   const [lockedTooltipId, setLockedTooltipId] = useState<string | null>(null);
 
   const isWorldLocked = (worldId: string) => {
+    // World 3 & World 4 locked for now
+    if (worldId === 'w3' || worldId === 'w4') {
+      return true;
+    }
     if (unlockedWorlds && unlockedWorlds.length > 0) {
       return !unlockedWorlds.includes(worldId);
     }
-    return worldId !== 'w1';
+    return worldId !== 'w1' && worldId !== 'w2';
   };
 
   const handleSelectWorld = (worldId: string) => {
@@ -252,9 +256,12 @@ export const SpawnPointSection: React.FC<SpawnPointSectionProps> = ({
             type="button"
             className="mc-game-btn mc-play-world-btn"
             onClick={handlePlaySelectedWorld}
-            disabled={selectedWorld.locked}
+            disabled={isWorldLocked(selectedWorldId)}
             aria-label={`Play selected world: ${selectedWorld.title}`}
-            style={{ opacity: selectedWorld.locked ? 0.5 : 1, cursor: selectedWorld.locked ? 'not-allowed' : undefined }}
+            style={{
+              opacity: isWorldLocked(selectedWorldId) ? 0.5 : 1,
+              cursor: isWorldLocked(selectedWorldId) ? 'not-allowed' : 'pointer',
+            }}
           >
             PLAY SELECTED WORLD
           </button>

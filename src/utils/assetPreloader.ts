@@ -181,55 +181,32 @@ export const WORLD_2_MANIFEST: AssetDefinition[] = [
     label: `Female Frame ${i}`,
     taskLabel: 'Preparing character sprites...',
   })),
-  // Friday Morning Memory Photos
+  // Devotional Test Video
   {
-    id: 'w2-photo-1',
-    url: '/assets/memories/friday_morning/IMG_6234.JPG',
-    type: 'image',
-    priority: 'critical',
-    label: 'Friday Morning Photo #1',
-    taskLabel: 'Loading Friday Morning memories...',
+    id: 'w2-video-devotional',
+    url: '/assets/memories/friday_morning/WhatsApp Video 2026-11-01 at 8.47.28 PM.mp4',
+    type: 'video_meta',
+    priority: 'secondary',
+    label: 'Devotional Test Video Preview',
+    taskLabel: 'Preparing video previews...',
   },
-  {
-    id: 'w2-photo-2',
-    url: '/assets/memories/friday_morning/IMG_6238.JPG',
-    type: 'image',
-    priority: 'critical',
-    label: 'Friday Morning Photo #2',
+  // Friday Morning Memory Photos (All 34 photos preloaded in background)
+  ...[
+    'IMG_6234.JPG', 'IMG_6246.JPG', 'IMG_6254.JPG', 'IMG_6346.JPG', 'IMG_6347.JPG',
+    'IMG_6351.JPG', 'IMG_6352.JPG', 'IMG_6354.JPG', 'IMG_6359.JPG', 'IMG_6360.JPG',
+    'IMG_6361.JPG', 'IMG_6365.JPG', 'IMG_6370.JPG', 'IMG_6372.JPG', 'IMG_6374.JPG',
+    'IMG_6375.JPG', 'IMG_6377.JPG', 'IMG_6384.JPG', 'IMG_6386.JPG', 'IMG_6390.JPG',
+    'IMG_6391.JPG', 'IMG_6393.JPG', 'IMG_6395.JPG', 'IMG_6400.JPG', 'IMG_6401.JPG',
+    'IMG_6405.JPG', 'IMG_6411.JPG', 'IMG_6412.JPG', 'IMG_6414.JPG', 'IMG_6419.JPG',
+    'IMG_6423.JPG', 'IMG_6428.JPG', 'IMG_6431.JPG', 'IMG_6432.JPG',
+  ].map((filename, i) => ({
+    id: `w2-photo-${i + 1}`,
+    url: `/assets/memories/friday_morning/${filename}`,
+    type: 'image' as const,
+    priority: 'secondary' as const,
+    label: `Friday Morning Photo #${i + 1}`,
     taskLabel: 'Loading Friday Morning memories...',
-  },
-  {
-    id: 'w2-photo-3',
-    url: '/assets/memories/friday_morning/IMG_6245.JPG',
-    type: 'image',
-    priority: 'critical',
-    label: 'Friday Morning Photo #3',
-    taskLabel: 'Loading Friday Morning memories...',
-  },
-  {
-    id: 'w2-photo-4',
-    url: '/assets/memories/friday_morning/IMG_6253.JPG',
-    type: 'image',
-    priority: 'critical',
-    label: 'Friday Morning Photo #4',
-    taskLabel: 'Loading Friday Morning memories...',
-  },
-  {
-    id: 'w2-photo-5',
-    url: '/assets/memories/friday_morning/IMG_6277.JPG',
-    type: 'image',
-    priority: 'critical',
-    label: 'Friday Morning Photo #5',
-    taskLabel: 'Loading Friday Morning memories...',
-  },
-  {
-    id: 'w2-photo-6',
-    url: '/assets/memories/friday_morning/IMG_6283.JPG',
-    type: 'image',
-    priority: 'critical',
-    label: 'Friday Morning Photo #6',
-    taskLabel: 'Loading Friday Morning memories...',
-  },
+  })),
 ];
 
 type ProgressListener = (progress: PreloadProgress) => void;

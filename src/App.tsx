@@ -28,26 +28,23 @@ export default function App() {
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [activeWorldId, setActiveWorldId] = useState<string | null>(null);
 
-  // Unlocked worlds state (w1 default unlocked; completing w1 unlocks w2; completing w2 unlocks w3)
+  // Unlocked worlds state: World 1 & 2 enabled, last 2 (w3, w4) locked for now
+  // Stats reset so user can test fresh
   const [unlockedWorlds, setUnlockedWorlds] = useState<string[]>(() => {
     try {
-      const saved = localStorage.getItem('hackfusion_unlocked_worlds');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
+      localStorage.setItem('hackfusion_unlocked_worlds', JSON.stringify(['w1', 'w2']));
     } catch {
       // fallback
     }
-    return ['w1'];
+    return ['w1', 'w2'];
   });
 
-  // Preload World 2 assets in background once main loading completes
+  // Preload World 2 components and assets in background while exploring the first level (w1)
   useEffect(() => {
-    if (!isLoading) {
+    if (activeWorldId === 'w1' || activeSection === 'spawn' || !isLoading) {
       assetPreloader.preloadManifest(WORLD_2_MANIFEST);
     }
-  }, [isLoading]);
+  }, [activeWorldId, activeSection, isLoading]);
 
   // Player profile state (saved across visit)
   const [playerProfile, setPlayerProfile] = useState<PlayerProfile>(() => {
@@ -142,18 +139,9 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Completion of World 2 (Friday Morning) unlocks World 3 (Jamming Night)
+  // Completion of World 2 (Friday Morning) - returns to Select World (last 2 locked for now)
   const handleUnlockWorld3 = () => {
     soundManager.playSavePointSound();
-    setUnlockedWorlds((prev) => {
-      const next = Array.from(new Set([...prev, 'w3']));
-      try {
-        localStorage.setItem('hackfusion_unlocked_worlds', JSON.stringify(next));
-      } catch {
-        // ignore
-      }
-      return next;
-    });
 
     try {
       confetti({
@@ -166,7 +154,7 @@ export default function App() {
       // ignore
     }
 
-    // Return to the Select World page where World 3 is now unlocked!
+    // Return to the Select World page
     setActiveWorldId(null);
     setActiveSection('spawn');
     window.scrollTo({ top: 0, behavior: 'smooth' });
